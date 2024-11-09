@@ -23,7 +23,7 @@ const CardRoom = ({ room }) => {
         <div>
           <div>
             <strong className="text-2xl font-semibold text-orange-600">
-              {room.total_price}$ for {room.stay_duration} days{" "}
+              ${room.total_price} for {room.stay_duration} days{" "}
             </strong>
           </div>{" "}
           <button
@@ -37,7 +37,7 @@ const CardRoom = ({ room }) => {
       <img
         src={room.image}
         alt=""
-        className="object-fit w-[600px] rounded-bl-md rounded-br-md rounded-tr-md object-cover object-center"
+        className="object-fit h-96 w-[600px] rounded-bl-md rounded-br-md rounded-tr-md object-cover object-center"
       />
     </li>
   );
