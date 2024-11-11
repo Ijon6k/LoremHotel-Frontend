@@ -12,12 +12,14 @@ const Booking = () => {
     checkOut: "",
     adults: 1,
     children: 0,
+    guests: 1, // New field for Guests
     name: "",
     phone: "",
     email: "",
   });
   const [totalCost, setTotalCost] = useState(0);
   const [days, setDays] = useState(0);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -54,12 +56,33 @@ const Booking = () => {
     setFormData((prevData) => ({
       ...prevData,
       [name]:
-        name === "adults" || name === "children" ? parseInt(value) : value,
+        name === "adults" || name === "children" || name === "guests"
+          ? parseInt(value)
+          : value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validasi jumlah penghuni
+    const totalGuests = formData.adults + formData.children;
+    if (room && totalGuests > room.capacity) {
+      setError(
+        `The number of guests exceeds the room's capacity. The maximum capacity is ${room.capacity} guests.`,
+      );
+      return;
+    }
+
+    // Validasi tanggal check-in dan check-out
+    const checkInDate = new Date(formData.checkIn);
+    const checkOutDate = new Date(formData.checkOut);
+    if (checkInDate >= checkOutDate) {
+      setError("Check-in and check-out dates are invalid. ");
+      return;
+    }
+
+    setError(""); // Reset error jika tidak ada error
 
     const bookingData = {
       roomId: room.id,
@@ -68,6 +91,7 @@ const Booking = () => {
       checkOut: formData.checkOut,
       adults: formData.adults,
       children: formData.children,
+      guests: formData.guests, // Include guests in the booking data
       name: formData.name,
       phone: formData.phone,
       email: formData.email,
@@ -110,8 +134,7 @@ const Booking = () => {
 
             <form onSubmit={handleSubmit} className="">
               <div className="flex w-full justify-between">
-                <div className="mr-5 flex">
-                  {" "}
+                <div className="flex">
                   <FormInput
                     label="Check-In Date"
                     type="date"
@@ -119,7 +142,7 @@ const Booking = () => {
                     value={formData.checkIn}
                     onChange={handleChange}
                     required
-                    customInput={"mr-2 w-36"}
+                    customInput={" w-36 mr-5"}
                   />
                   <FormInput
                     label="Check-Out Date"
@@ -128,10 +151,21 @@ const Booking = () => {
                     value={formData.checkOut}
                     onChange={handleChange}
                     required
-                    customInput={"ml-2 w-36"}
+                    customInput={" w-36 "}
                   />
+
+                  {/* <FormInput
+                    label="Guests"
+                    type="number"
+                    name="guests"
+                    value={formData.guests}
+                    onChange={handleChange}
+                    min="1"
+                    required
+                    customInput={"w-24"}
+                    customLabel={"text-center"}
+                  /> */}
                 </div>
-                {/*  */}
                 <div className="flex gap-3">
                   <FormInput
                     label="Adults"
@@ -150,6 +184,7 @@ const Booking = () => {
                     value={formData.children}
                     onChange={handleChange}
                     min="0"
+                    max=""
                     customInput={"w-14"}
                   />
                 </div>
@@ -182,17 +217,15 @@ const Booking = () => {
                 required
                 customInput={"w-full"}
               />
-
               <FormInput
                 label="Any Request?"
                 type="text"
                 name="request"
                 value={formData.city}
                 onChange={handleChange}
-                required
                 customInput={"w-full h-16"}
               />
-
+              {error && <p className="mt-2 text-red-600">{error}</p>}
               <div className="mt-6">
                 <strong className="text-lg font-semibold">
                   Total Cost: ${totalCost} for {days}{" "}

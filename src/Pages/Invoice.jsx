@@ -109,10 +109,9 @@ const Invoice = () => {
               {(bookingDetails.adults || 0) + (bookingDetails.children || 0)}{" "}
             </h1>
 
-            <p>Check-in Date:</p>
-            <h1>{bookingDetails.check_in}</h1>
-            <p>Check-out Date:</p>
-            <h1>{bookingDetails.check_out}</h1>
+            <p>Check-in Date: {bookingDetails.checkIn}</p>
+            <p>Check-out Date: {bookingDetails.checkOut}</p>
+
             <p>Stay Days: {bookingDetails.days}</p>
           </div>
           <div className="w-full pt-10">
