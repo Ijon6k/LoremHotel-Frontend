@@ -4,41 +4,53 @@ import Logo from "/image/WebLogo.png";
 
 const Invoice = () => {
   const { id } = useParams();
-  const navigate = useNavigate(); // Untuk navigasi ke halaman Home
+  const navigate = useNavigate();
   const [bookingDetails, setBookingDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/confirmed-booking/${id}`,
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch booking details");
+      const tryFetch = async (url) => {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error("Failed to fetch booking details");
+          }
+          return await response.json();
+        } catch (error) {
+          return null;
         }
-        const data = await response.json();
-        setBookingDetails(data);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
+      };
+
+      // Coba fetch ke URL yang diforward terlebih dahulu
+      const forwardedUrl = `https://9qqcwcvt-8080.asse.devtunnels.ms/confirmed-booking/${id}`;
+      let bookingData = await tryFetch(forwardedUrl);
+
+      // Jika fetch ke URL yang diforward gagal, coba fetch ke localhost
+      if (!bookingData) {
+        const localUrl = `http://localhost:8080/confirmed-booking/${id}`;
+        bookingData = await tryFetch(localUrl);
       }
+
+      if (bookingData) {
+        setBookingDetails(bookingData);
+      } else {
+        setError("Failed to fetch booking details");
+      }
+
+      setLoading(false);
     };
 
     fetchBookingDetails();
   }, [id]);
 
   const handleConfirm = () => {
-    // Navigasi ke halaman Home setelah konfirmasi
-    navigate("/");
+    navigate("/"); // Navigasi ke halaman Home setelah konfirmasi
   };
 
   const handlePrint = () => {
-    // Menyembunyikan bagian yang tidak ingin dicetak
-
-    // Menyembunyikan elemen yang tidak perlu dicetak (misal tombol)
+    // Menyembunyikan elemen yang tidak perlu dicetak
     const otherElements = document.querySelectorAll(".no-print");
     otherElements.forEach((el) => (el.style.display = "none"));
 
@@ -88,9 +100,7 @@ const Invoice = () => {
           id="print-content"
           className="relative -mt-6 h-auto min-h-[calc(100vh-240px)] w-full rounded-tl-3xl rounded-tr-3xl border-2 border-primary/30 bg-[#FDF7F1] px-10 pt-5"
         >
-          {/*  */}
           <img src={Logo} className="absolute bottom-10 right-10 h-8" />
-          {/*  */}
           <div className="relative text-sm font-semibold text-[#625A5A]">
             <p className="absolute right-0 top-0">
               Invoice Number: #0{bookingDetails.id}

@@ -30,18 +30,23 @@ const BookingForm = () => {
     setRooms([]);
     setIsLoading(true); // Set loading to true saat memulai pencarian
 
+    // Coba fetch dari forwarded port terlebih dahulu
     try {
-      const response = await fetch("http://localhost:8080/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      let response = await fetch(
+        "https://9qqcwcvt-8080.asse.devtunnels.ms/search",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        },
+      );
 
+      // Jika response tidak ok, coba fetch dari localhost
       if (!response.ok) {
-        setError("No available rooms found.");
-        return;
+        throw new Error("Forwarded port not available, trying localhost...");
       }
 
+      // Jika berhasil mendapatkan data
       const data = await response.json();
       setRooms(data);
 
@@ -49,8 +54,31 @@ const BookingForm = () => {
         setError("No available rooms found.");
       }
     } catch (error) {
-      console.error("Error fetching rooms:", error);
-      setError("An error occurred while fetching rooms.");
+      // Jika error dari forwarded port, coba localhost
+      console.log(error.message); // Log error dari forwarded port
+
+      try {
+        let response = await fetch("http://localhost:8080/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) {
+          setError("No available rooms found.");
+          return;
+        }
+
+        const data = await response.json();
+        setRooms(data);
+
+        if (data.length === 0) {
+          setError("No available rooms found.");
+        }
+      } catch (error) {
+        console.error("Error fetching rooms:", error);
+        setError("An error occurred while fetching rooms.");
+      }
     } finally {
       setIsLoading(false); // Set loading to false setelah pencarian selesai
     }
@@ -102,7 +130,6 @@ const BookingForm = () => {
                 type="number"
                 min="1"
                 name="adults"
-              
                 value={formData.adults}
                 onChange={handleChange}
                 required
@@ -117,7 +144,6 @@ const BookingForm = () => {
                 type="number"
                 min="0"
                 name="children"
-              
                 value={formData.children}
                 onChange={handleChange}
                 required

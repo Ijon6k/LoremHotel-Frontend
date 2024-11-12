@@ -12,7 +12,7 @@ const Booking = () => {
     checkOut: "",
     adults: 1,
     children: 0,
-    guests: 1, // New field for Guests
+    guests: 1,
     name: "",
     phone: "",
     email: "",
@@ -21,11 +21,33 @@ const Booking = () => {
   const [days, setDays] = useState(0);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchRoom = async () => {
-      const response = await fetch(`http://localhost:8080/booking/${id}`);
+  // Fungsi untuk mencoba fetch dari URL eksternal terlebih dahulu
+  const fetchRoomData = async (url) => {
+    try {
+      const response = await fetch(url);
       if (response.ok) {
         const roomData = await response.json();
+        return roomData;
+      } else {
+        throw new Error("Failed to fetch data");
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
+  // Melakukan fetch dari URL eksternal terlebih dahulu, fallback ke localhost jika gagal
+  useEffect(() => {
+    const fetchRoom = async () => {
+      const externalUrl = `https://9qqcwcvt-8080.asse.devtunnels.ms/booking/${id}`;
+      let roomData = await fetchRoomData(externalUrl);
+
+      if (!roomData) {
+        roomData = await fetchRoomData(`http://localhost:8080/booking/${id}`);
+      }
+
+      if (roomData) {
         setRoom(roomData);
       } else {
         console.error("Room not found");
@@ -99,18 +121,40 @@ const Booking = () => {
       days: days,
     };
 
-    const response = await fetch("http://localhost:8080/confirm", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(bookingData),
-    });
+    // Fungsi untuk mencoba fetch dari URL yang diforward terlebih dahulu
+    const tryFetch = async (url) => {
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bookingData),
+        });
 
-    if (response.ok) {
-      const data = await response.json();
-      alert(data.confirmationMessage);
-      navigate(`/invoice/${data.booking.id}`);
+        if (response.ok) {
+          return await response.json();
+        } else {
+          throw new Error("Error confirming booking");
+        }
+      } catch (error) {
+        return null;
+      }
+    };
+
+    // Coba fetch ke URL yang diforward terlebih dahulu
+    const forwardedUrl = "https://9qqcwcvt-8080.asse.devtunnels.ms/confirm";
+    let responseData = await tryFetch(forwardedUrl);
+
+    // Jika fetch ke URL yang diforward gagal, coba fetch ke localhost
+    if (!responseData) {
+      const localUrl = "http://localhost:8080/confirm";
+      responseData = await tryFetch(localUrl);
+    }
+
+    if (responseData) {
+      alert(responseData.confirmationMessage);
+      navigate(`/invoice/${responseData.booking.id}`);
     } else {
       console.error("Error confirming booking");
     }
@@ -153,18 +197,6 @@ const Booking = () => {
                     required
                     customInput={" w-36 "}
                   />
-
-                  {/* <FormInput
-                    label="Guests"
-                    type="number"
-                    name="guests"
-                    value={formData.guests}
-                    onChange={handleChange}
-                    min="1"
-                    required
-                    customInput={"w-24"}
-                    customLabel={"text-center"}
-                  /> */}
                 </div>
                 <div className="flex gap-3">
                   <FormInput
@@ -184,12 +216,10 @@ const Booking = () => {
                     value={formData.children}
                     onChange={handleChange}
                     min="0"
-                    max=""
                     customInput={"w-14"}
                   />
                 </div>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2"></div>
               <FormInput
                 label="Name"
                 type="text"
