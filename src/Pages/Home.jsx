@@ -58,6 +58,9 @@ const Home = () => {
               src={standard}
               className="h-full w-full object-cover object-center"
             />
+            <p className="absolute left-5 top-5 text-3xl font-semibold text-white">
+              Standard room
+            </p>
             <div className="absolute bottom-0 flex w-full bg-primary px-10 py-2">
               <div className="flex h-fit items-center gap-2 text-white">
                 <span className="h-fit">2</span>{" "}
@@ -76,15 +79,18 @@ const Home = () => {
               alt=""
               className="h-full w-full object-cover object-center"
             />
+            <p className="absolute left-5 top-5 text-3xl font-semibold text-white">
+              Suite room
+            </p>
             <div className="absolute bottom-0 flex w-full bg-primary px-10 py-2">
               <p className="flex h-fit w-fit items-center gap-2 text-white">
-                <span className="h-fit">2</span>{" "}
+                <span className="h-fit">6</span>{" "}
                 <span>
                   <IoPerson size={30} />
                 </span>{" "}
               </p>
               <p className="w-full text-end font-semibold text-[#F8D7A4]">
-                100$/Night
+                900$/Night
               </p>
             </div>
           </div>
@@ -97,9 +103,12 @@ const Home = () => {
               src={family}
               className="h-full w-full object-cover object-center"
             />
+            <p className="absolute left-5 top-5 text-3xl font-semibold text-white">
+              Family room
+            </p>
             <div className="absolute bottom-0 flex w-full bg-primary px-10 py-2 text-white">
               <p className="flex h-fit items-center gap-2">
-                <span className="h-fit">2</span>{" "}
+                <span className="h-fit">5</span>{" "}
                 <span>
                   <IoPerson size={30} />
                 </span>{" "}
@@ -116,6 +125,9 @@ const Home = () => {
               alt=""
               className="h-full w-full object-cover object-center"
             />
+            <p className="absolute left-5 top-5 text-3xl font-semibold text-white">
+              Deluxe room
+            </p>
             <div className="absolute bottom-0 flex w-full bg-primary px-10 py-2 text-white">
               <p className="flex h-fit items-center gap-2">
                 <span className="h-fit">2</span>{" "}
@@ -125,7 +137,7 @@ const Home = () => {
               </p>
               <p className="w-full text-end font-semibold text-[#F8D7A4]">
                 {" "}
-                100$/Night
+                300$/Night
               </p>
             </div>
           </div>

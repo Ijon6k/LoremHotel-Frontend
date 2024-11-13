@@ -98,9 +98,9 @@ const Invoice = () => {
         </div>
         <div
           id="print-content"
-          className="relative -mt-6 h-auto min-h-[calc(100vh-240px)] w-full rounded-tl-3xl rounded-tr-3xl border-2 border-primary/30 bg-[#FDF7F1] px-10 pt-5"
+          className="relative -mt-6 h-auto min-h-[calc(100vh-190px)] w-full rounded-tl-3xl rounded-tr-3xl border-2 border-primary/30 bg-[#FDF7F1] px-10 pt-5"
         >
-          <img src={Logo} className="absolute bottom-10 right-10 h-8" />
+          <img src={Logo} className="absolute bottom-10 left-10 h-8" />
           <div className="relative text-sm font-semibold text-[#625A5A]">
             <p className="absolute right-0 top-0">
               Invoice Number: #0{bookingDetails.id}
@@ -124,14 +124,14 @@ const Invoice = () => {
 
             <p>Stay Days: {bookingDetails.days}</p>
           </div>
-          <div className="w-full pt-10">
+          <div className="w-full pt-5">
             <div className="flex w-full justify-between px-5 font-semibold text-[#625A5A]">
               <p>Qty</p>
               <p className="w-96">Room/Product</p>
               <p>Price</p>
             </div>
 
-            <div className="mt-5 flex w-full justify-between border-2 border-primary px-8 py-8 text-lg font-semibold text-[#625A5A]">
+            <div className="mt-2 flex w-full justify-between border-2 border-primary px-8 py-8 text-lg font-semibold text-[#625A5A]">
               <p>1</p>
               <p className="text-center">Room: {bookingDetails.roomType}</p>
               <p>$ {bookingDetails.totalCost}</p>

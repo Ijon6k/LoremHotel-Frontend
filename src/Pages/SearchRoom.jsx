@@ -13,7 +13,7 @@ const BookingForm = () => {
   });
   const [rooms, setRooms] = useState([]);
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Tambahkan loader state
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,10 +27,16 @@ const BookingForm = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
     setError("");
-    setRooms([]);
-    setIsLoading(true); // Set loading to true saat memulai pencarian
 
-    // Coba fetch dari forwarded port terlebih dahulu
+    // Check if check-in date is earlier than check-out date
+    if (new Date(formData.checkIn) >= new Date(formData.checkOut)) {
+      setError("Check-out date must be later than check-in date.");
+      return;
+    }
+
+    setRooms([]);
+    setIsLoading(true);
+
     try {
       let response = await fetch(
         "https://9qqcwcvt-8080.asse.devtunnels.ms/search",
@@ -41,12 +47,10 @@ const BookingForm = () => {
         },
       );
 
-      // Jika response tidak ok, coba fetch dari localhost
       if (!response.ok) {
         throw new Error("Forwarded port not available, trying localhost...");
       }
 
-      // Jika berhasil mendapatkan data
       const data = await response.json();
       setRooms(data);
 
@@ -54,8 +58,7 @@ const BookingForm = () => {
         setError("No available rooms found.");
       }
     } catch (error) {
-      // Jika error dari forwarded port, coba localhost
-      console.log(error.message); // Log error dari forwarded port
+      console.log(error.message);
 
       try {
         let response = await fetch("http://localhost:8080/search", {
@@ -80,7 +83,7 @@ const BookingForm = () => {
         setError("An error occurred while fetching rooms.");
       }
     } finally {
-      setIsLoading(false); // Set loading to false setelah pencarian selesai
+      setIsLoading(false);
     }
   };
 
@@ -97,7 +100,6 @@ const BookingForm = () => {
           className="absolute bottom-0 left-1/2 mt-10 flex -translate-x-1/2 translate-y-1/2 transform overflow-hidden rounded-xl shadow-lg"
         >
           <div className="mx-auto flex max-w-3xl items-end space-x-4 bg-white px-10 py-3 font-bold text-primary shadow-md">
-            {/* Check-in Date */}
             <div className="flex w-fit flex-grow flex-col">
               <label className="mb-1 text-sm">Check-In</label>
               <input
@@ -110,7 +112,6 @@ const BookingForm = () => {
               />
             </div>
 
-            {/* Check-out Date */}
             <div className="flex flex-grow flex-col">
               <label className="mb-1 text-sm">Check-Out</label>
               <input
@@ -123,7 +124,6 @@ const BookingForm = () => {
               />
             </div>
 
-            {/* Adults */}
             <div className="flex flex-grow flex-col">
               <label className="mb-1 text-center text-sm">Adults</label>
               <input
@@ -137,7 +137,6 @@ const BookingForm = () => {
               />
             </div>
 
-            {/* Children */}
             <div className="input container flex flex-grow flex-col">
               <label className="mb-1 text-center text-sm">Children</label>
               <input
@@ -150,8 +149,6 @@ const BookingForm = () => {
                 className="w-14 rounded-2xl border-2 border-primary p-2 focus:outline-none focus:ring focus:ring-blue-400"
               />
             </div>
-
-            {/* Search Button */}
           </div>
 
           <button className="bg-primary px-16 py-2 text-white transition duration-200 hover:bg-blue-900">
