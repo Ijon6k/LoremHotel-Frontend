@@ -23,14 +23,14 @@ const Invoice = () => {
         }
       };
 
-      // Coba fetch ke URL yang diforward terlebih dahulu
-      const forwardedUrl = `https://9qqcwcvt-8080.asse.devtunnels.ms/confirmed-booking/${id}`;
-      let bookingData = await tryFetch(forwardedUrl);
+      // Try fetching from the local URL first
+      const localUrl = `http://localhost:8080/confirmed-booking/${id}`;
+      let bookingData = await tryFetch(localUrl);
 
-      // Jika fetch ke URL yang diforward gagal, coba fetch ke localhost
+      // If fetching from localhost fails, try the forwarded URL
       if (!bookingData) {
-        const localUrl = `http://localhost:8080/confirmed-booking/${id}`;
-        bookingData = await tryFetch(localUrl);
+        const forwardedUrl = `https://9qqcwcvt-8080.asse.devtunnels.ms/confirmed-booking/${id}`;
+        bookingData = await tryFetch(forwardedUrl);
       }
 
       if (bookingData) {

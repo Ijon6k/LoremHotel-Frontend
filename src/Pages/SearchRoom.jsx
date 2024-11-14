@@ -37,15 +37,32 @@ const BookingForm = () => {
     setRooms([]);
     setIsLoading(true);
 
+    const fetchWithTimeout = (url, options, timeout = 5000) => {
+      return new Promise((resolve, reject) => {
+        const timer = setTimeout(
+          () => reject(new Error("Request timed out")),
+          timeout,
+        );
+        fetch(url, options)
+          .then(resolve)
+          .catch(reject)
+          .finally(() => clearTimeout(timer));
+      });
+    };
+
     try {
-      let response = await fetch(
-        "https://9qqcwcvt-8080.asse.devtunnels.ms/search",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        },
-      );
+      let response = await Promise.race([
+        fetchWithTimeout(
+          "https://9qqcwcvt-8080.asse.devtunnels.ms/search",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          },
+          5000, // Timeout 5 seconds
+        ),
+        // This timeout will trigger if the forwarded port request takes longer than 5 seconds
+      ]);
 
       if (!response.ok) {
         throw new Error("Forwarded port not available, trying localhost...");
@@ -60,6 +77,7 @@ const BookingForm = () => {
     } catch (error) {
       console.log(error.message);
 
+      // If error is due to timeout or failure, proceed to localhost request
       try {
         let response = await fetch("http://localhost:8080/search", {
           method: "POST",

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import FormInput from "../Components/FormInput";
 import { MdOutlineArrowBackIos } from "react-icons/md";
+import { toast } from "react-toastify"; // Import toast from react-toastify
+import "react-toastify/dist/ReactToastify.css"; // Import the styles for toast
 
 const Booking = () => {
   const { id } = useParams();
@@ -40,11 +42,12 @@ const Booking = () => {
   // Melakukan fetch dari URL eksternal terlebih dahulu, fallback ke localhost jika gagal
   useEffect(() => {
     const fetchRoom = async () => {
-      const externalUrl = `https://9qqcwcvt-8080.asse.devtunnels.ms/booking/${id}`;
-      let roomData = await fetchRoomData(externalUrl);
+      let roomData = await fetchRoomData(`http://localhost:8080/booking/${id}`);
 
       if (!roomData) {
-        roomData = await fetchRoomData(`http://localhost:8080/booking/${id}`);
+        roomData = await fetchRoomData(
+          `https://9qqcwcvt-8080.asse.devtunnels.ms/booking/${id}`,
+        );
       }
 
       if (roomData) {
@@ -93,6 +96,7 @@ const Booking = () => {
       setError(
         `The number of guests exceeds the room's capacity. The maximum capacity is ${room.capacity} guests.`,
       );
+      toast.error("The number of guests exceeds the room's capacity.");
       return;
     }
 
@@ -100,7 +104,8 @@ const Booking = () => {
     const checkInDate = new Date(formData.checkIn);
     const checkOutDate = new Date(formData.checkOut);
     if (checkInDate >= checkOutDate) {
-      setError("Check-in and check-out dates are invalid. ");
+      setError("Check-in and check-out dates are invalid.");
+      toast.error("Check-in and check-out dates are invalid.");
       return;
     }
 
@@ -142,21 +147,20 @@ const Booking = () => {
       }
     };
 
-    // Coba fetch ke URL yang diforward terlebih dahulu
-    const forwardedUrl = "https://9qqcwcvt-8080.asse.devtunnels.ms/confirm";
-    let responseData = await tryFetch(forwardedUrl);
+    const localUrl = "http://localhost:8080/confirm";
+    let responseData = await tryFetch(localUrl);
 
-    // Jika fetch ke URL yang diforward gagal, coba fetch ke localhost
+    // If fetching from localhost fails, try the forwarded URL
     if (!responseData) {
-      const localUrl = "http://localhost:8080/confirm";
-      responseData = await tryFetch(localUrl);
+      const forwardedUrl = "https://9qqcwcvt-8080.asse.devtunnels.ms/confirm";
+      responseData = await tryFetch(forwardedUrl);
     }
 
     if (responseData) {
-      alert(responseData.confirmationMessage);
+      toast.success(responseData.confirmationMessage); // Show success toast
       navigate(`/invoice/${responseData.booking.id}`);
     } else {
-      console.error("Error confirming booking");
+      toast.error("Error confirming booking"); // Show error toast
     }
   };
 
