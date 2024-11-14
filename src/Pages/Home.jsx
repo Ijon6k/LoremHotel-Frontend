@@ -1,24 +1,37 @@
 import PageWrapper from "../Components/PageWrapper";
 import hotelvector from "/image/hotelvector.png";
-import SearchHome from "../Components/SearchHome";
+// import SearchHome from "../Components/SearchHome";
 import deluxe from "/image/deluxe.png";
 import suite from "/image/suite.png";
 import standard from "/image/standard.png";
 import family from "/image/family.png";
 import { IoPerson } from "react-icons/io5";
+import { useRef } from "react";
 
 const Home = () => {
+  const roomOptionsRef = useRef(null);
+
+  const scrollToRoomOptions = () => {
+    window.scrollTo({
+      top: roomOptionsRef.current.offsetTop,
+      behavior: "smooth",
+    });
+  };
   return (
     <PageWrapper customClass=" h-screen">
-      <main className="relative h-[85%] max-h-[800px] w-full bg-[url('/image/landingBG.png')] bg-cover bg-center">
-        <SearchHome customClass="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 mt-10 shadow-lg" />
-
-        <div className="absolute left-10 top-1/3 text-[#FDF7F1]">
+      <main className="flex h-full max-h-[1200px] w-full items-center justify-center bg-[url('/image/landingBG.png')] bg-cover bg-center text-[#FDF7F1]">
+        <div className="mb-24 text-center">
           <h1 className="text-5xl font-bold">Welcome to Lorem Hotel.</h1>
-          <p className="w-[75%] text-xl">
+          <p className="w-full text-xl">
             Experience unmatched comfort and unforgettable moments. Your perfect
             stay awaits.
           </p>
+          <button
+            onClick={scrollToRoomOptions}
+            className="hover:bg-primary-dark mt-5 rounded-lg bg-primary px-6 py-3 text-lg font-semibold text-white"
+          >
+            View Room Options
+          </button>
         </div>
       </main>
 
@@ -42,7 +55,10 @@ const Home = () => {
 
       {/* room section */}
 
-      <section className="mx-auto h-auto max-w-screen-xl px-10 text-2xl">
+      <section
+        ref={roomOptionsRef}
+        className="mx-auto h-auto max-w-screen-xl px-10 text-2xl"
+      >
         {/*  */}
         <div className="pb-10 text-center text-primary">
           <h1 className="text-4xl font-semibold">Room Option</h1>
