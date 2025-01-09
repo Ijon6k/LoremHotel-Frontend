@@ -46,7 +46,7 @@ const Booking = () => {
 
       if (!roomData) {
         roomData = await fetchRoomData(
-          `https://https://2bq4z8pt-8080.asse.devtunnels.ms/booking/${id}`,
+          `https://2bq4z8pt-8080.asse.devtunnels.ms/booking/${id}`,
         );
       }
 
