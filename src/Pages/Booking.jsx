@@ -152,7 +152,7 @@ const Booking = () => {
 
     // If fetching from localhost fails, try the forwarded URL
     if (!responseData) {
-      const forwardedUrl = "https://9qqcwcvt-8080.asse.devtunnels.ms/confirm";
+      const forwardedUrl = "https://2bq4z8pt-8080.asse.devtunnels.ms/confirm";
       responseData = await tryFetch(forwardedUrl);
     }
 
@@ -172,7 +172,7 @@ const Booking = () => {
       >
         <MdOutlineArrowBackIos />
       </button>
-      <div className="flex h-screen max-h-[1000px] w-2/3 max-w-[700px] flex-col justify-center px-14 pt-16">
+      <div className="flex h-screen max-h-[1000px] w-full flex-col justify-center px-6 pt-16 sm:w-2/3 sm:px-14">
         {room && (
           <>
             <h1 className="w-full text-3xl font-bold">
@@ -180,9 +180,9 @@ const Booking = () => {
             </h1>
             <h2 className="mb-6 text-2xl font-semibold">{room.type}</h2>
 
-            <form onSubmit={handleSubmit} className="">
-              <div className="flex w-full justify-between">
-                <div className="flex">
+            <form onSubmit={handleSubmit}>
+              <div className="flex w-full flex-wrap justify-between gap-4">
+                <div className="flex gap-5">
                   <FormInput
                     label="Check-In Date"
                     type="date"
@@ -190,7 +190,7 @@ const Booking = () => {
                     value={formData.checkIn}
                     onChange={handleChange}
                     required
-                    customInput={" w-36 mr-5"}
+                    customInput={"w-36"}
                   />
                   <FormInput
                     label="Check-Out Date"
@@ -199,7 +199,7 @@ const Booking = () => {
                     value={formData.checkOut}
                     onChange={handleChange}
                     required
-                    customInput={" w-36 "}
+                    customInput={"w-36"}
                   />
                 </div>
                 <div className="flex gap-3">
@@ -278,7 +278,7 @@ const Booking = () => {
       </div>
 
       {room && (
-        <div className="w-fit">
+        <div className="hidden w-fit sm:block">
           <img
             src={room.image}
             alt={room.type}

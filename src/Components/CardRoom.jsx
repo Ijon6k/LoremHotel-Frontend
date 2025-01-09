@@ -9,26 +9,27 @@ const CardRoom = ({ room }) => {
   };
 
   return (
-    <li className="flex w-fit">
-      <div className="flex h-80 w-72 flex-col justify-between rounded-md border-2 border-slate-300 bg-slate-200 p-5">
+    <li className="mb-10 flex w-full flex-col items-center sm:w-fit sm:flex-row">
+      <div className="flex h-auto w-full max-w-xs flex-col justify-between rounded-md border-2 border-slate-300 bg-slate-200 p-5 sm:h-80 sm:w-72">
         <div>
-          {" "}
-          <strong className="text-2xl">{room.type}</strong>
-          <p className="text-md text-gray-600">{room.description}</p>
-          <p className="text-lg font-semibold">
+          <strong className="text-xl sm:text-2xl">{room.type}</strong>
+          <p className="sm:text-md text-sm text-gray-600">{room.description}</p>
+          <p className="text-md font-semibold sm:text-lg">
             Price per Night: ${room.price_per_night}
           </p>
-          <p className="text-lg font-semibold">Capacity: {room.capacity}</p>
+          <p className="text-md font-semibold sm:text-lg">
+            Capacity: {room.capacity}
+          </p>
         </div>
         <div>
           <div>
-            <strong className="text-2xl font-semibold text-orange-600">
-              ${room.total_price} for {room.stay_duration} days{" "}
+            <strong className="text-lg font-semibold text-orange-600 sm:text-2xl">
+              ${room.total_price} for {room.stay_duration} days
             </strong>
-          </div>{" "}
+          </div>
           <button
             onClick={handleBooking}
-            className="mt-3 rounded-md bg-primary px-3 py-2 text-xl text-white"
+            className="mt-3 w-full rounded-md bg-primary px-3 py-2 text-lg text-white transition hover:bg-blue-900 sm:text-xl"
           >
             Booking
           </button>
@@ -37,7 +38,7 @@ const CardRoom = ({ room }) => {
       <img
         src={room.image}
         alt=""
-        className="object-fit h-96 w-[600px] rounded-bl-md rounded-br-md rounded-tr-md object-cover object-center"
+        className="h-48 w-full rounded-md object-cover sm:h-96 sm:w-[600px]"
       />
     </li>
   );
