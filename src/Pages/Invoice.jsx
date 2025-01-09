@@ -29,7 +29,7 @@ const Invoice = () => {
 
       // If fetching from localhost fails, try the forwarded URL
       if (!bookingData) {
-        const forwardedUrl = `https://9qqcwcvt-8080.asse.devtunnels.ms/confirmed-booking/${id}`;
+        const forwardedUrl = `https://2bq4z8pt-8080.asse.devtunnels.ms/confirmed-booking/${id}`;
         bookingData = await tryFetch(forwardedUrl);
       }
 
