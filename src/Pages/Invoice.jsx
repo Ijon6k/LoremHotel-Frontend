@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Logo from "/image/WebLogo.png";
+
+// Buat instance Axios dengan baseURL untuk semua permintaan API.
+const apiClient = axios.create({
+  baseURL: "http://localhost:8080",
+});
 
 const Invoice = () => {
   const { id } = useParams();
@@ -11,35 +17,18 @@ const Invoice = () => {
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
-      const tryFetch = async (url) => {
-        try {
-          const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error("Failed to fetch booking details");
-          }
-          return await response.json();
-        } catch (error) {
-          return null;
-        }
-      };
-
-      // Try fetching from the local URL first
-      const localUrl = `http://localhost:8080/confirmed-booking/${id}`;
-      let bookingData = await tryFetch(localUrl);
-
-      // If fetching from localhost fails, try the forwarded URL
-      if (!bookingData) {
-        const forwardedUrl = `https://2bq4z8pt-8080.asse.devtunnels.ms/confirmed-booking/${id}`;
-        bookingData = await tryFetch(forwardedUrl);
+      try {
+        // Gunakan apiClient untuk membuat permintaan GET ke endpoint yang benar.
+        const response = await apiClient.get(`/confirmed-booking/${id}`);
+        setBookingDetails(response.data);
+      } catch (err) {
+        // Tangani error jika permintaan gagal.
+        console.error("Gagal mengambil detail pemesanan:", err);
+        setError("Gagal mengambil detail pemesanan");
+      } finally {
+        // Pastikan loading diatur ke false setelah permintaan selesai.
+        setLoading(false);
       }
-
-      if (bookingData) {
-        setBookingDetails(bookingData);
-      } else {
-        setError("Failed to fetch booking details");
-      }
-
-      setLoading(false);
     };
 
     fetchBookingDetails();
@@ -51,20 +40,20 @@ const Invoice = () => {
 
   const handlePrint = () => {
     // Menyembunyikan elemen yang tidak perlu dicetak
-    const otherElements = document.querySelectorAll(".no-print");
-    otherElements.forEach((el) => (el.style.display = "none"));
+    const elementsToHide = document.querySelectorAll(".no-print");
+    elementsToHide.forEach((el) => (el.style.display = "none"));
 
     // Memanggil dialog print
     window.print();
 
-    // Menampilkan kembali elemen yang disembunyikan
-    otherElements.forEach((el) => (el.style.display = "block"));
+    // Menampilkan kembali elemen yang disembunyikan setelah print
+    elementsToHide.forEach((el) => (el.style.display = ""));
   };
 
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <h2 className="text-xl text-gray-600">Loading...</h2>
+        <h2 className="text-xl text-gray-600">Memuat...</h2>
       </div>
     );
   }
@@ -80,11 +69,14 @@ const Invoice = () => {
   if (!bookingDetails) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <h2 className="text-xl text-gray-600">No booking details available.</h2>
+        <h2 className="text-xl text-gray-600">
+          Tidak ada detail pemesanan yang tersedia.
+        </h2>
       </div>
     );
   }
 
+  // Struktur JSX dan styling tetap sama persis.
   return (
     <div className="h-screen w-screen bg-white">
       <div className="mx-auto h-screen w-[800px] max-w-screen-2xl">
@@ -100,40 +92,45 @@ const Invoice = () => {
           id="print-content"
           className="relative -mt-6 h-auto min-h-[calc(100vh-190px)] w-full rounded-tl-3xl rounded-tr-3xl border-2 border-primary/30 bg-[#FDF7F1] px-10 pt-5"
         >
-          <img src={Logo} className="absolute bottom-10 left-10 h-8" />
+          <img
+            src={Logo}
+            className="absolute bottom-10 left-10 h-8"
+            alt="Logo"
+          />
           <div className="relative text-sm font-semibold text-[#625A5A]">
             <p className="absolute right-0 top-0">
-              Invoice Number: #0{bookingDetails.id}
+              Nomor Invoice: #0{bookingDetails.id}
             </p>
-            <p>Guest Name:</p>
+            <p>Nama Tamu:</p>
             <strong className="text-xl font-bold text-primary">
               {bookingDetails.name}
             </strong>
             <p className="text-xs">{bookingDetails.email}</p>
             <p className="text-xs">{bookingDetails.phone}</p>
             <h1 className="text-xl font-bold text-primary">
-              Room Type: {bookingDetails.roomType}
+              Tipe Kamar: {bookingDetails.roomType}
             </h1>
             <h1>
-              Capacity:{" "}
+              Kapasitas:{" "}
               {(bookingDetails.adults || 0) + (bookingDetails.children || 0)}{" "}
+              Tamu
             </h1>
 
-            <p>Check-in Date: {bookingDetails.checkIn}</p>
-            <p>Check-out Date: {bookingDetails.checkOut}</p>
+            <p>Tanggal Check-in: {bookingDetails.checkIn}</p>
+            <p>Tanggal Check-out: {bookingDetails.checkOut}</p>
 
-            <p>Stay Days: {bookingDetails.days}</p>
+            <p>Lama Menginap: {bookingDetails.days} hari</p>
           </div>
           <div className="w-full pt-5">
             <div className="flex w-full justify-between px-5 font-semibold text-[#625A5A]">
-              <p>Qty</p>
-              <p className="w-96">Room/Product</p>
-              <p>Price</p>
+              <p>Jml</p>
+              <p className="w-96">Kamar/Produk</p>
+              <p>Harga</p>
             </div>
 
             <div className="mt-2 flex w-full justify-between border-2 border-primary px-8 py-8 text-lg font-semibold text-[#625A5A]">
               <p>1</p>
-              <p className="text-center">Room: {bookingDetails.roomType}</p>
+              <p className="text-center">Kamar: {bookingDetails.roomType}</p>
               <p>$ {bookingDetails.totalCost}</p>
             </div>
             <p className="pt-5 text-end font-bold text-[#625A5A]">
@@ -145,13 +142,13 @@ const Invoice = () => {
               onClick={handlePrint}
               className="no-print rounded border-2 border-primary px-6 py-2 font-semibold text-primary"
             >
-              Print
+              Cetak
             </button>
             <button
               onClick={handleConfirm}
-              className="rounded bg-primary px-6 py-2 font-semibold text-white"
+              className="no-print rounded bg-primary px-6 py-2 font-semibold text-white"
             >
-              Confirm
+              Konfirmasi
             </button>
           </div>
         </div>
